@@ -20,41 +20,31 @@ namespace WinDivertSharp
         //}
         //WINDIVERT_DATA_SOCKET, * PWINDIVERT_DATA_SOCKET;
 
-        [StructLayout(LayoutKind.Explicit)]
+        [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 64)]
         public unsafe struct Socket
         {
             /// <summary> Endpoint ID. </summary>
-            [FieldOffset(0)]
             public ulong EndpointId;
 
             /// <summary> Parent Endpoint ID. </summary>
-            [FieldOffset(8)]
             public ulong ParentEndpointId;
 
             /// <summary> Process ID. </summary>
-            [FieldOffset(16)]
             public uint ProcessId;
 
             /// <summary> Local address. </summary>
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            [FieldOffset(24)]
-            public uint[] LocalAddr;
+            public fixed uint LocalAddr[4];
 
             /// <summary> Remote address.  </summary>
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            [FieldOffset(40)]
-            public uint[] RemoteAddr;
+            public fixed uint RemoteAddr[4];
 
             /// <summary> Local port. </summary>
-            [FieldOffset(56)]
             public ushort LocalPort;
 
             /// <summary> Remote port. </summary>
-            [FieldOffset(58)]
             public ushort RemotePort;
 
             /// <summary> Protocol. </summary>
-            [FieldOffset(60)]
             public byte Protocol;
         }
     }

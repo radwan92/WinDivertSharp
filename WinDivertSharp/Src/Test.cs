@@ -22,15 +22,16 @@ namespace WinDivertSharp
             public int Foo;
 
             //[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 20)]
-            [MarshalAs(UnmanagedType.LPStr)]
-            public string Bar;
+            //[MarshalAs(UnmanagedType.LPStr)]
+            //public string Bar;
+            public char* Bar;
 
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
-            public byte[] Bytes;
+            public fixed byte Bytes[4];
 
             public override string ToString()
             {
-                return $":: {nameof(Foo)}: {Foo}, {nameof(Bar)}: {Bar}, {nameof(Bytes)}: {Bytes[0]} {Bytes[1]} {Bytes[2]} {Bytes[3]}";
+                //return $":: {nameof(Foo)}: {Foo}, {nameof(Bar)}: {Bar}, {nameof(Bytes)}: {Bytes[0]} {Bytes[1]} {Bytes[2]} {Bytes[3]}";
+                return $":: {nameof(Foo)}: {Foo}, {nameof(Bar)}: {(Bar != null ? Marshal.PtrToStringBSTR((IntPtr)Bar) : "")}, {nameof(Bytes)}: {Bytes[0]} {Bytes[1]} {Bytes[2]} {Bytes[3]}";
             }
         }
 
@@ -42,11 +43,12 @@ namespace WinDivertSharp
 
             TS ts = GetData("woof!");
             Console.WriteLine(ts);
-            TestInRefMod(ref ts);
+            TestInOut(ref ts);
             //TS ts = default;
             //TestOut(ref ts);
 
             Console.WriteLine(ts);
+            Console.ReadKey();
 
             //Marshal.FreeHGlobal((IntPtr)str);
         }
@@ -55,8 +57,8 @@ namespace WinDivertSharp
         {
             TS ts = new TS();
             ts.Foo = 999;
-            ts.Bar = str;
-            ts.Bytes = new byte[4];
+            //ts.Bar = str;
+            //ts.Bytes = new byte[4];
             ts.Bytes[0] = 99;
             ts.Bytes[1] = 98;
             ts.Bytes[2] = 97;

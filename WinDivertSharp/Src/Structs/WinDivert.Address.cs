@@ -38,7 +38,7 @@ namespace WinDivertSharp
             [FieldOffset(11)] fixed byte m_Reserved[5];
             [FieldOffset(16)] fixed byte m_Reserved2[64];
 
-            //[FieldOffset(16)] public Socket Socket;
+            [FieldOffset(16)] public Socket Socket;
             [FieldOffset(16)] public Network Network;
             [FieldOffset(16)] public Flow Flow;
             [FieldOffset(16)] public Reflect Reflect;

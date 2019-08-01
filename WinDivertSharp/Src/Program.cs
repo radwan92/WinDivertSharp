@@ -11,6 +11,9 @@ namespace WinDivertSharp
     {
         static void Main(string[] args)
         {
+            Test.RunTest();
+            return;
+
             Thread host = new Thread(RunHost);
             Thread client = new Thread(RunClient);
             host.IsBackground = true;
