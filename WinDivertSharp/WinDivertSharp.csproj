@@ -12,6 +12,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WinDivertTestUtils\WinDivertTestUtils.vcxproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Content</OutputItemType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="MarshalDllTest.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

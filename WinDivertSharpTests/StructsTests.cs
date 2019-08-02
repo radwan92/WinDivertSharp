@@ -1,4 +1,3 @@
-using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
@@ -8,10 +7,10 @@ namespace Tests
 {
     public class StructsTests
     {
-        [DllImport("MarshalDllTest.dll")]
+        [DllImport("WinDivertTestUtils.dll")]
         static extern int SizeOf([MarshalAs(UnmanagedType.LPStr)] string structName);
 
-        [DllImport("MarshalDllTest.dll")]
+        [DllImport("WinDivertTestUtils.dll")]
         static extern int OffsetOf([MarshalAs(UnmanagedType.LPStr)] string structName, [MarshalAs(UnmanagedType.LPStr)] string fieldName);
 
         [Test]
