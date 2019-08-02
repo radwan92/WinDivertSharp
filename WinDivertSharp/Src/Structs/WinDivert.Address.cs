@@ -51,10 +51,10 @@ namespace WinDivertSharp
             }
 
             /// <summary> Packet's layer. </summary>
-            public byte Layer
+            public Layer Layer
             {
-                get => m_Layer;
-                set => m_Layer = value;
+                get => (Layer)m_Layer;
+                set => m_Layer = (byte)value;
             }
 
             /// <summary> Packet event. </summary>
@@ -118,6 +118,11 @@ namespace WinDivertSharp
             {
                 get => (m_Flags & (1 << 7)) > 0;
                 set => m_Flags |= (1 << 7);
+            }
+
+            public override string ToString()
+            {
+                return $"{nameof(Timestamp)}: {Timestamp}, {nameof(Layer)}: {Layer}, {nameof(Event)}: {Event}, {nameof(Sniffed)}: {Sniffed}, {nameof(Outbound)}: {Outbound}, {nameof(Loopback)}: {Loopback}, {nameof(Impostor)}: {Impostor}, {nameof(IPv6)}: {IPv6}, {nameof(IPChecksum)}: {IPChecksum}, {nameof(TCPChecksum)}: {TCPChecksum}, {nameof(UDPChecksum)}: {UDPChecksum}";
             }
         }
     }

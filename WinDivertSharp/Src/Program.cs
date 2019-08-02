@@ -11,9 +11,6 @@ namespace WinDivertSharp
     {
         static void Main(string[] args)
         {
-            Test.RunTest();
-            return;
-
             Thread host = new Thread(RunHost);
             Thread client = new Thread(RunClient);
             host.IsBackground = true;
@@ -22,12 +19,8 @@ namespace WinDivertSharp
             host.Start();
             client.Start();
 
-            Console.WriteLine($"Sock: {Marshal.SizeOf<WinDivert.Socket>()}, " +
-                              $"Network: {Marshal.SizeOf<WinDivert.Network>()}, " +
-                              $"Flow: {Marshal.SizeOf<WinDivert.Flow>()}");
-
-            IntPtr winDivert = WinDivert.Open("outbound and tcp.DstPort == 1337", WinDivert.Layer.NETWORK, 0, WinDivert.Flags.SNIFF);
-            if (winDivert == WinDivert.INVALID_HANDLE_VALUE)
+            IntPtr incoming = WinDivert.Open("outbound and tcp.DstPort == 1337", WinDivert.Layer.NETWORK, 0, WinDivert.Flags.READ_WRITE);
+            if (incoming == WinDivert.INVALID_HANDLE_VALUE)
             {
                 WinDivert.ErrorInfo err = WinDivert.GetLastError();
                 Console.WriteLine(err);
@@ -40,16 +33,17 @@ namespace WinDivertSharp
             {
                 while (true)
                 {
-                    if (WinDivert.Recv(winDivert, packetMem, 4096, out uint recvLen, out WinDivert.Address address))
+                    if (WinDivert.Recv(incoming, packetMem, 4096, out uint recvLen, out WinDivert.Address address))
                     {
-                        Console.WriteLine("Got packet!");
+                        Console.WriteLine($"Got packet: {PrintMemory(packetMem, recvLen)}");
+                        WinDivert.Send(incoming, packetMem, recvLen, out uint sent, address);
                     }
                     else
                     {
                         Console.WriteLine("Packet capture failure");
                     }
 
-                    Thread.Sleep(500);
+                    //Thread.Sleep(500);
                 }
             }
             finally
@@ -58,6 +52,38 @@ namespace WinDivertSharp
             }
 
             Console.ReadKey();
+        }
+
+        static unsafe string PrintMemory(IntPtr address, uint length)
+        {
+            var sb = new StringBuilder();
+            sb.Append($"[{length}] ");
+
+            if (length >= 40)
+            {
+                length -= 40;
+                address += 40;
+            }
+
+            byte* ptr = (byte*)address;
+
+            for (int i = 0; i < length; i++)
+            {
+                sb.Append(Convert.ToString(*ptr, 16).ToUpperInvariant().PadLeft(2, '0'));
+                sb.Append(" ");
+                ptr++;
+            }
+
+            sb.AppendLine();
+
+            ptr = (byte*)address;
+            for (int i = 0; i < length; i++)
+            {
+                sb.Append((char)*ptr);
+                ptr++;
+            }
+
+            return sb.ToString();
         }
 
         static void RunHost()
@@ -79,11 +105,11 @@ namespace WinDivertSharp
                 {
                     Span<byte> span = stackalloc byte[available];
                     int read = client.GetStream().Read(span);
-                    string text = Encoding.UTF8.GetString(span);
+                    string text = Encoding.ASCII.GetString(span);
 
                     Console.WriteLine("Client says: " + text);
 
-                    byte[] data = Encoding.UTF8.GetBytes("server: " + i++);
+                    byte[] data = Encoding.ASCII.GetBytes("server: " + i++);
                     client.GetStream().Write(data, 0, data.Length);
                 }
             }
@@ -101,7 +127,7 @@ namespace WinDivertSharp
             {
                 Thread.Sleep(3000);
 
-                byte[] data = Encoding.UTF8.GetBytes("client: " + i++);
+                byte[] data = Encoding.ASCII.GetBytes("client: " + i++);
                 client.GetStream().Write(data, 0, data.Length);
 
                 int available = client.Available;
@@ -109,7 +135,7 @@ namespace WinDivertSharp
                 {
                     Span<byte> span = stackalloc byte[available];
                     int read = client.GetStream().Read(span);
-                    string text = Encoding.UTF8.GetString(span);
+                    string text = Encoding.ASCII.GetString(span);
                     Console.WriteLine("Server says: " + text);
 
                 }

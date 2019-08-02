@@ -18,6 +18,7 @@ namespace WinDivertSharp
         [Flags]
         public enum Flags : ulong
         {
+            READ_WRITE = 0x0000,
             SNIFF = 0x0001,
             DROP = 0x0002,
             RECV_ONLY = 0x0004,
