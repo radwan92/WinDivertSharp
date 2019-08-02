@@ -2,7 +2,8 @@
 #include "windivert.h"
 
 #define EXPORT __declspec(dllexport)
-#define TryGetOffset(object, field, fieldName) if (!strcmp(field, #fieldName)) return offsetof(WINDIVERT_##object, fieldName)
+#define TryGetOffset(structName, field, fieldName) if (!strcmp(field, #fieldName)) return offsetof(WINDIVERT_##structName, fieldName)
+#define TryGetValue(object, field, fieldName) if (!strcmp(field, #fieldName)) return object->fieldName
 
 EXPORT int SizeOf(char * name) 
 { 
@@ -65,4 +66,19 @@ EXPORT int OffsetOf(char * object, char * field)
 	}
 
 	return -1;
+}
+
+EXPORT long GetAddressValueFrom(PWINDIVERT_ADDRESS address, char * field)
+{
+	TryGetValue(address, field, Timestamp);
+	TryGetValue(address, field, Layer);
+	TryGetValue(address, field, Event);
+	TryGetValue(address, field, Sniffed);
+	TryGetValue(address, field, Outbound);
+	TryGetValue(address, field, Loopback);
+	TryGetValue(address, field, Impostor);
+	TryGetValue(address, field, IPv6);
+	TryGetValue(address, field, IPChecksum);
+	TryGetValue(address, field, TCPChecksum);
+	TryGetValue(address, field, UDPChecksum);
 }

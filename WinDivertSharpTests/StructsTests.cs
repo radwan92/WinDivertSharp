@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
@@ -12,6 +13,9 @@ namespace Tests
 
         [DllImport("WinDivertTestUtils.dll")]
         static extern int OffsetOf([MarshalAs(UnmanagedType.LPStr)] string structName, [MarshalAs(UnmanagedType.LPStr)] string fieldName);
+
+        [DllImport("WinDivertTestUtils.dll")]
+        static extern long GetAddressValueFrom([In] WinDivert.Address address, [MarshalAs(UnmanagedType.LPStr)] string fieldName);
 
         [Test]
         public void Struct_Size_Matches()
@@ -178,6 +182,47 @@ namespace Tests
 
             // Assert
             CollectionAssert.AreEqual(expectedOffsets, offsets);
+        }
+
+        [Test]
+        public void Address_Values_Match()
+        {
+            // Arrange
+            string[] fields =
+            {
+                nameof(WinDivert.Address.Timestamp),
+                nameof(WinDivert.Address.Layer),
+                nameof(WinDivert.Address.Event),
+                nameof(WinDivert.Address.Sniffed),
+                nameof(WinDivert.Address.Outbound),
+                nameof(WinDivert.Address.Loopback),
+                nameof(WinDivert.Address.Impostor),
+                nameof(WinDivert.Address.IPv6),
+                nameof(WinDivert.Address.IPChecksum),
+                nameof(WinDivert.Address.TCPChecksum),
+                nameof(WinDivert.Address.UDPChecksum),
+            };
+
+            // Act & Assert
+            foreach (string fieldName in fields)
+            {
+                WinDivert.Address address = default;
+                object boxedAddress = address;
+
+                try { address.GetType().GetProperty(fieldName).SetValue(boxedAddress, (byte)1); }
+                catch { address.GetType().GetProperty(fieldName).SetValue(boxedAddress, true); }
+
+                address = (WinDivert.Address)boxedAddress;
+
+                Assert.AreEqual(1, GetAddressValueFrom(address, fieldName), fieldName);
+                foreach (string otherField in fields)
+                {
+                    if(fieldName == otherField)
+                        continue;
+                    
+                    Assert.AreEqual(0, GetAddressValueFrom(address, otherField), otherField);
+                }
+            }
         }
 
         static void GetOffsets<T>(string[] fields, out int[] expectedOffsets, out int[] offsets)
