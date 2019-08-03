@@ -7,6 +7,58 @@ using System.Threading;
 
 namespace WinDivertSharp
 {
+    // Lags - packet delay, bandwidth intact
+    // Bandwidth - bytes per second throttling
+    // Duplication - inserting 1 to x duplicates of a packet
+    // Corruption - changing data inside packet
+    // Drop - just randomly drop packets
+    // Reorder - change packet ordering
+
+    public class SocketManipulator
+    {
+        Socket m_Socket;
+        IntPtr m_WinDivertHandle;
+
+        IntPtr m_PacketBuffer;
+
+        public SocketManipulator(Socket socket)
+        {
+            if (socket.ProtocolType != ProtocolType.Tcp) throw new ArgumentException("Not a TCP socket");
+            if (!socket.IsBound) throw new ArgumentException("Socket not bound");
+            if (!socket.Connected) throw new ArgumentException("Socket not connected");
+
+            m_Socket = socket;
+
+            int srcPort = ((IPEndPoint) m_Socket.LocalEndPoint).Port;
+            int dstPort = ((IPEndPoint) m_Socket.RemoteEndPoint).Port;
+            string socketFilter = $"(inbound or outbound) and tcp.SrcPort == {srcPort} tcp.DstPort == {dstPort}";
+
+            m_WinDivertHandle = WinDivert.Open(socketFilter, WinDivert.Layer.NETWORK, 0, WinDivert.Flags.READ_WRITE);
+            if (m_WinDivertHandle == WinDivert.INVALID_HANDLE_VALUE)
+            {
+                WinDivert.ErrorInfo err = WinDivert.GetLastError();
+                throw new Exception(err.Description);
+            }
+
+            m_PacketBuffer = Marshal.AllocHGlobal(short.MaxValue);
+
+            // Kick off the loops
+        }
+
+        void ReadPackets()
+        {
+            // Read packets with Recv
+            // Copy them to a buff
+            // Store them in a concurrent queue
+        }
+
+        void ProcessPackets()
+        {
+            // Process the packet queue
+
+        }
+    }
+
     class Program
     {
         static void Main(string[] args)
@@ -19,13 +71,26 @@ namespace WinDivertSharp
             host.Start();
             client.Start();
 
-            IntPtr incoming = WinDivert.Open("outbound and tcp.DstPort == 1337", WinDivert.Layer.NETWORK, 0, WinDivert.Flags.READ_WRITE);
+            IntPtr incoming = WinDivert.Open("(inbound or outbound) and tcp.DstPort == 1337", WinDivert.Layer.NETWORK, 0, WinDivert.Flags.READ_WRITE);
             if (incoming == WinDivert.INVALID_HANDLE_VALUE)
             {
                 WinDivert.ErrorInfo err = WinDivert.GetLastError();
                 Console.WriteLine(err);
                 Console.ReadKey();
                 return;
+            }
+
+            if (WinDivert.GetParam(incoming, WinDivert.Param.QUEUE_LENGTH, out ulong value))
+            {
+                Console.WriteLine($"QueueLength: {value}");
+            }
+            if (WinDivert.GetParam(incoming, WinDivert.Param.QUEUE_SIZE, out value))
+            {
+                Console.WriteLine($"QueueSize: {value}");
+            }
+            if (WinDivert.GetParam(incoming, WinDivert.Param.QUEUE_TIME, out value))
+            {
+                Console.WriteLine($"QueueTime: {value}");
             }
 
             IntPtr packetMem = Marshal.AllocHGlobal(4096);
@@ -35,7 +100,7 @@ namespace WinDivertSharp
                 {
                     if (WinDivert.Recv(incoming, packetMem, 4096, out uint recvLen, out WinDivert.Address address))
                     {
-                        Console.WriteLine($"Got packet: {PrintMemory(packetMem, recvLen)}");
+                        Console.WriteLine($"Got packet [{(address.Outbound ? "OUT" : "IN")}]: {PrintMemory(packetMem, recvLen)}");
                         WinDivert.Send(incoming, packetMem, recvLen, out uint sent, address);
                     }
                     else
