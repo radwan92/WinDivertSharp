@@ -94,14 +94,25 @@ namespace WinDivertSharp
             }
 
             IntPtr packetMem = Marshal.AllocHGlobal(4096);
+            Random rnd = new Random();
             try
             {
                 while (true)
                 {
                     if (WinDivert.Recv(incoming, packetMem, 4096, out uint recvLen, out WinDivert.Address address))
                     {
-                        Console.WriteLine($"Got packet [{(address.Outbound ? "OUT" : "IN")}]: {PrintMemory(packetMem, recvLen)}");
-                        WinDivert.Send(incoming, packetMem, recvLen, out uint sent, address);
+                        //Console.WriteLine($"Got packet [{(address.Outbound ? "OUT" : "IN")}]: {PrintMemory(packetMem, recvLen)}");
+
+                        bool drop = rnd.Next(0, 4) == 1;
+                        if (drop)
+                        {
+                            Console.WriteLine("Dropped");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Sent");
+                            WinDivert.Send(incoming, packetMem, recvLen, out uint sent, address);
+                        }
                     }
                     else
                     {
@@ -165,6 +176,8 @@ namespace WinDivertSharp
             while (true)
             {
                 Thread.Sleep(3000);
+
+                // Read
                 int available = client.Available;
                 if (available > 0)
                 {
@@ -173,10 +186,11 @@ namespace WinDivertSharp
                     string text = Encoding.ASCII.GetString(span);
 
                     Console.WriteLine("Client says: " + text);
-
-                    byte[] data = Encoding.ASCII.GetBytes("server: " + i++);
-                    client.GetStream().Write(data, 0, data.Length);
                 }
+
+                // Write
+                byte[] data = Encoding.ASCII.GetBytes("server: " + i++);
+                client.GetStream().Write(data, 0, data.Length);
             }
         }
 
@@ -192,18 +206,20 @@ namespace WinDivertSharp
             {
                 Thread.Sleep(3000);
 
-                byte[] data = Encoding.ASCII.GetBytes("client: " + i++);
-                client.GetStream().Write(data, 0, data.Length);
-
+                // Read
                 int available = client.Available;
                 if (available > 0)
                 {
                     Span<byte> span = stackalloc byte[available];
                     int read = client.GetStream().Read(span);
                     string text = Encoding.ASCII.GetString(span);
-                    Console.WriteLine("Server says: " + text);
 
+                    Console.WriteLine("Server says: " + text);
                 }
+
+                // Write
+                byte[] data = Encoding.ASCII.GetBytes("client: " + i++);
+                client.GetStream().Write(data, 0, data.Length);
             }
         }
     }
