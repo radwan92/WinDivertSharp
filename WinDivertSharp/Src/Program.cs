@@ -13,6 +13,7 @@ namespace WinDivertSharp
     // Corruption - changing data inside packet
     // Drop - just randomly drop packets
     // Reorder - change packet ordering
+	
 
     public class SocketManipulator
     {
