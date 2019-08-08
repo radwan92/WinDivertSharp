@@ -24,6 +24,8 @@ namespace WinDivertSharp
 
             /// <summary> Shutdown recv and send. </summary>
             BOTH = 3,
+
+            MAX = BOTH
         }
     }
 }

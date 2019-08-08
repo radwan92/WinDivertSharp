@@ -5,8 +5,8 @@ namespace WinDivertSharp
     public static partial class WinDivert
     {
         /*
-     * WinDivert SOCKET layer data.
-     */
+         * WinDivert SOCKET layer data.
+         */
         //typedef struct
         //{
         //    UINT64 EndpointId;                  /* Endpoint ID. */
@@ -35,7 +35,7 @@ namespace WinDivertSharp
             /// <summary> Local address. </summary>
             public fixed uint LocalAddr[4];
 
-            /// <summary> Remote address.  </summary>
+            /// <summary> Remote address. </summary>
             public fixed uint RemoteAddr[4];
 
             /// <summary> Local port. </summary>

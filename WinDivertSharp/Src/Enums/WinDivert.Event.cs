@@ -3,8 +3,8 @@ namespace WinDivertSharp
     public static partial class WinDivert
     {
         /*
-     * WinDivert events.
-     */
+         * WinDivert events.
+         */
         //typedef enum
         //{
         //    WINDIVERT_EVENT_NETWORK_PACKET = 0, /* Network packet. */
@@ -51,7 +51,7 @@ namespace WinDivertSharp
             REFLECT_OPEN,
 
             /// <summary> WinDivert handle closed. </summary>
-            REFLECT_CLOSE,
+            REFLECT_CLOSE
         }
     }
 }

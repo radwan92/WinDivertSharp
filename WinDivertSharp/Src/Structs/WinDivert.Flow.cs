@@ -5,8 +5,8 @@ namespace WinDivertSharp
     public static partial class WinDivert
     {
         /*
-     * WinDivert FLOW layer data.
-     */
+         * WinDivert FLOW layer data.
+         */
         //typedef struct
         //{
         //    UINT64 EndpointId;                  /* Endpoint ID. */

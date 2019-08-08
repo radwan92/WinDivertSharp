@@ -30,7 +30,7 @@ namespace WinDivertSharp
             SOCKET,
 
             /// <summary> Reflect layer. </summary>
-            REFLECT,
+            REFLECT
         }
     }
 }

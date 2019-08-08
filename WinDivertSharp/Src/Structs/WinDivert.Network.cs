@@ -5,8 +5,8 @@ namespace WinDivertSharp
     public static partial class WinDivert
     {
         /*
-     * WinDivert NETWORK and NETWORK_FORWARD layer data.
-     */
+         * WinDivert NETWORK and NETWORK_FORWARD layer data.
+         */
         //typedef struct
         //{
         //    UINT32 IfIdx;                       /* Packet's interface index. */

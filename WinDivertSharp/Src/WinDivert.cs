@@ -2,36 +2,17 @@
 using System.Runtime.InteropServices;
 using System.Threading;
 
-#if UNITY_ENGINE
-using UnityEditor;
-using UnityEngine;
-#endif
-
 namespace WinDivertSharp
 {
     public static partial class WinDivert
     {
-        public static readonly IntPtr INVALID_HANDLE_VALUE = (IntPtr) (-1);
-
 #if UNITY_ENGINE
-    const string WINDIVERT_DLL = "WinDivert";
+        const string WINDIVERT_DLL = "WinDivert";
 #else
         const string WINDIVERT_DLL = "WinDivert.dll";
 #endif
-
-#if UNITY_ENGINE
-    [MenuItem("Test/Run _m")]
-    public static void Test()
-    {
-        Debug.Log("Running");
-        IntPtr result = Open("outbound and tcp.PayloadLength > 0 and tcp.DstPort == 80", Layer.NETWORK, 0, 0);
-        Debug.Log(result);
-
-        if(result == INVALID_HANDLE_VALUE)
-            Debug.Log(GetLastError());
-    }
-#endif
-
+        
+        /* ----------------------------------------------------------------------------------------------------------------- */
         /*
         HANDLE WinDivertOpen(
             __in const char* filter,
@@ -47,7 +28,7 @@ namespace WinDivertSharp
             short priority,
             Flags flags);
 
-
+        /* ----------------------------------------------------------------------------------------------------------------- */
         /*
         BOOL WinDivertRecv(
             __in HANDLE handle,
@@ -65,7 +46,7 @@ namespace WinDivertSharp
             out uint recvLen,
             out Address address);
 
-
+        /* ----------------------------------------------------------------------------------------------------------------- */
         /*
         WINDIVERTEXPORT BOOL WinDivertRecvEx(
             __in        HANDLE handle,
@@ -89,7 +70,7 @@ namespace WinDivertSharp
             ref uint addrLen,
             ref NativeOverlapped overlapped);
 
-
+        /* ----------------------------------------------------------------------------------------------------------------- */
         /*
         WINDIVERTEXPORT BOOL WinDivertSend(
             __in        HANDLE handle,
@@ -107,7 +88,7 @@ namespace WinDivertSharp
             out uint sendLen,
             Address address);
 
-
+        /* ----------------------------------------------------------------------------------------------------------------- */
         /*
         WINDIVERTEXPORT BOOL WinDivertSendEx(
             __in        HANDLE handle,
@@ -131,7 +112,7 @@ namespace WinDivertSharp
             uint addrLen,
             ref NativeOverlapped overlapped);
 
-
+        /* ----------------------------------------------------------------------------------------------------------------- */
         /*
         WINDIVERTEXPORT BOOL WinDivertShutdown(
             __in HANDLE handle,
@@ -143,7 +124,7 @@ namespace WinDivertSharp
             IntPtr handle,
             Shutdown how);
 
-
+        /* ----------------------------------------------------------------------------------------------------------------- */
         /*
         WINDIVERTEXPORT BOOL WinDivertClose(
             __in HANDLE handle);
@@ -152,7 +133,7 @@ namespace WinDivertSharp
         [DllImport(WINDIVERT_DLL, EntryPoint = "WinDivertClose", SetLastError = true)]
         public static extern bool Close(IntPtr handle);
 
-
+        /* ----------------------------------------------------------------------------------------------------------------- */
         /*
         WINDIVERTEXPORT BOOL WinDivertSetParam(
             __in HANDLE handle,
@@ -166,7 +147,7 @@ namespace WinDivertSharp
             Param param,
             ulong value);
 
-
+        /* ----------------------------------------------------------------------------------------------------------------- */
         /*
         WINDIVERTEXPORT BOOL WinDivertGetParam(
             __in HANDLE handle,

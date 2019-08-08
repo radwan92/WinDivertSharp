@@ -5,8 +5,8 @@ namespace WinDivertSharp
     public static partial class WinDivert
     {
         /*
-     * WinDivert REFLECTION layer data.
-     */
+         * WinDivert REFLECTION layer data.
+         */
         //typedef struct
         //{
         //    INT64 Timestamp;                   /* Handle open time. */
