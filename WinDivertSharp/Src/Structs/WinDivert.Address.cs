@@ -70,7 +70,7 @@ namespace WinDivertSharp
             /// <summary> Packet was sniffed? </summary>
             public bool Sniffed
             {
-                get => (m_Flags & (1 << 0)) > 0;
+                get => (m_Flags & (1 << 0)) != 0;
                 set
                 {
                     if (value)
@@ -83,7 +83,7 @@ namespace WinDivertSharp
             /// <summary> Packet is outbound? </summary>
             public bool Outbound
             {
-                get => (m_Flags & (1 << 1)) > 0;
+                get => (m_Flags & (1 << 1)) != 0;
                 set
                 {
                     if (value)
@@ -96,7 +96,7 @@ namespace WinDivertSharp
             /// <summary> Packet is loopback? </summary>
             public bool Loopback
             {
-                get => (m_Flags & (1 << 2)) > 0;
+                get => (m_Flags & (1 << 2)) != 0;
                 set
                 {
                     if (value)
@@ -109,7 +109,7 @@ namespace WinDivertSharp
             /// <summary> Packet is impostor? </summary>
             public bool Impostor
             {
-                get => (m_Flags & (1 << 3)) > 0;
+                get => (m_Flags & (1 << 3)) != 0;
                 set
                 {
                     if (value)
@@ -122,7 +122,7 @@ namespace WinDivertSharp
             /// <summary> Packet is IPv6? </summary>
             public bool IPv6
             {
-                get => (m_Flags & (1 << 4)) > 0;
+                get => (m_Flags & (1 << 4)) != 0;
                 set
                 {
                     if (value)
@@ -135,7 +135,7 @@ namespace WinDivertSharp
             /// <summary> Packet has valid IPv4 checksum? </summary>
             public bool IPChecksum
             {
-                get => (m_Flags & (1 << 5)) > 0;
+                get => (m_Flags & (1 << 5)) != 0;
                 set
                 {
                     if (value)
@@ -148,7 +148,7 @@ namespace WinDivertSharp
             /// <summary> Packet has valid TCP checksum? </summary>
             public bool TCPChecksum
             {
-                get => (m_Flags & (1 << 6)) > 0;
+                get => (m_Flags & (1 << 6)) != 0;
                 set
                 {
                     if (value)
@@ -161,7 +161,7 @@ namespace WinDivertSharp
             /// <summary> Packet has valid UDP checksum? </summary>
             public bool UDPChecksum
             {
-                get => (m_Flags & (1 << 7)) > 0;
+                get => (m_Flags & (1 << 7)) != 0;
                 set
                 {
                     if (value)
