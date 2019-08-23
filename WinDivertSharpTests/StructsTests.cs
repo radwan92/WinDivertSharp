@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
 using WinDivertSharp;
@@ -22,6 +23,9 @@ namespace Tests
         [DllImport(TEST_UTILS_DLL)]
         static extern long GetIpHdrValueFrom([In] WinDivert.IpHdr header, [MarshalAs(UnmanagedType.LPStr)] string fieldName);
 
+        [DllImport(TEST_UTILS_DLL)]
+        static extern long GetIpv6HdrValueFrom([In] WinDivert.Ipv6Hdr header, [MarshalAs(UnmanagedType.LPStr)] string fieldName);
+
         /* ----------------------------------------------------------------------------------------------------------------- */
         [Test]
         public void Struct_Size_Matches()
@@ -34,7 +38,8 @@ namespace Tests
                 nameof(WinDivert.Network),
                 nameof(WinDivert.Flow),
                 nameof(WinDivert.Reflect),
-                nameof(WinDivert.IpHdr)
+                nameof(WinDivert.IpHdr),
+                nameof(WinDivert.Ipv6Hdr),
             };
 
             int[]    sizes         = new int[structsToTest.Length];
@@ -223,6 +228,29 @@ namespace Tests
 
         /* ----------------------------------------------------------------------------------------------------------------- */
         [Test]
+        public unsafe void Ipv6Hdr_Offsets_Match()
+        {
+            // Arrange
+            string[] fields =
+            {
+                nameof(WinDivert.Ipv6Hdr.FlowLabel1),
+                nameof(WinDivert.Ipv6Hdr.Length),
+                nameof(WinDivert.Ipv6Hdr.NextHdr),
+                nameof(WinDivert.Ipv6Hdr.HopLimit),
+                nameof(WinDivert.Ipv6Hdr.SrcAddr),
+                nameof(WinDivert.Ipv6Hdr.DstAddr)
+            };
+
+            // Act
+            GetOffsets<WinDivert.Ipv6Hdr>(fields, out int[] expectedOffsets, out int[] offsets);
+
+            // Assert
+            for (int i = 0; i < fields.Length; i++)
+                Assert.AreEqual(expectedOffsets[i], offsets[i], fields[i]);
+        }
+
+        /* ----------------------------------------------------------------------------------------------------------------- */
+        [Test]
         public void Address_Values_Match()
         {
             // Arrange
@@ -259,7 +287,6 @@ namespace Tests
                 nameof(WinDivert.IpHdr.TOS),
                 nameof(WinDivert.IpHdr.Length),
                 nameof(WinDivert.IpHdr.Id),
-                //nameof(WinDivert.IpHdr.FragOff0),
                 nameof(WinDivert.IpHdr.TTL),
                 nameof(WinDivert.IpHdr.Protocol),
                 nameof(WinDivert.IpHdr.Checksum),
@@ -275,6 +302,31 @@ namespace Tests
             // Act & Assert
             AssertSingleFieldValueHigh<WinDivert.IpHdr>(fields, GetIpHdrValueFrom);
             AssertSingleFieldValueLow<WinDivert.IpHdr>(fields, GetIpHdrValueFrom);
+        }
+
+        /* ----------------------------------------------------------------------------------------------------------------- */
+        [Test]
+        public void Ipv6Hdr_Values_Match()
+        {
+            // Arrange
+            string[] fields =
+            {
+                nameof(WinDivert.Ipv6Hdr.Version),
+                nameof(WinDivert.Ipv6Hdr.Length),
+                nameof(WinDivert.Ipv6Hdr.NextHdr),
+                nameof(WinDivert.Ipv6Hdr.HopLimit),
+
+                // TODO: Workaround for setting fixed buffer values
+                //nameof(WinDivert.Ipv6Hdr.SrcAddr),
+                //nameof(WinDivert.Ipv6Hdr.DstAddr),
+
+                nameof(WinDivert.Ipv6Hdr.TrafficClass),
+                nameof(WinDivert.Ipv6Hdr.FlowLabel),
+            };
+
+            // Act & Assert
+            AssertSingleFieldValueHigh<WinDivert.Ipv6Hdr>(fields, GetIpv6HdrValueFrom);
+            AssertSingleFieldValueLow<WinDivert.Ipv6Hdr>(fields, GetIpv6HdrValueFrom);
         }
 
         /* ----------------------------------------------------------------------------------------------------------------- */
