@@ -24,7 +24,7 @@ namespace WinDivertSharp
         [StructLayout(LayoutKind.Sequential)]
         public struct IpHdr
         {
-            // 4 bits of HdrLength, 4 bits of Version
+            // HdrLength:4, Version:4
             byte m_HdrLength4_Version4;
 
             public byte   TOS;
@@ -51,26 +51,26 @@ namespace WinDivertSharp
 
             public ushort FragOff
             {
-                get => (ushort) (FragOff0 & 0xFF1F);
-                set => FragOff0 = (ushort) ((FragOff0 & 0x00E0) | (value & 0xFF1F));
+                get => (ushort) (FragOff0 & 0b_1111_1111__0001_1111);
+                set => FragOff0 = (ushort) ((FragOff0 & 0b_1110__0000) | (value & 0b_1111_1111__0001_1111));
             }
 
             public bool MF
             {
-                get => (FragOff0 & 0x0020) != 0;
-                set => FragOff0 = (ushort) ((FragOff0 & 0xFFDF) | (Convert.ToInt32(value) << 5));
+                get => (FragOff0 & 0b_0010_0000) != 0;
+                set => FragOff0 = (ushort) ((FragOff0 & 0b_1111_1111__1101_1111) | (Convert.ToInt32(value) << 5));
             }
 
             public bool DF
             {
-                get => (FragOff0 & 0x0040) != 0;
-                set => FragOff0 = (ushort) ((FragOff0 & 0xFFBF) | (Convert.ToInt32(value) << 6));
+                get => (FragOff0 & 0b_0100_0000) != 0;
+                set => FragOff0 = (ushort) ((FragOff0 & 0b_1111_1111__1011_1111) | (Convert.ToInt32(value) << 6));
             }
 
             public bool Reserved
             {
-                get => (FragOff0 & 0x0080) != 0;
-                set => FragOff0 = (ushort) ((FragOff0 & 0xFF7F) | (Convert.ToInt32(value) << 7));
+                get => (FragOff0 & 0b_1000_0000) != 0;
+                set => FragOff0 = (ushort) ((FragOff0 & 0b_1111_1111__0111_1111) | (Convert.ToInt32(value) << 7));
             }
         }
     }

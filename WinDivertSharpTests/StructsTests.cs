@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
 using WinDivertSharp;
@@ -26,6 +25,9 @@ namespace Tests
         [DllImport(TEST_UTILS_DLL)]
         static extern long GetIpv6HdrValueFrom([In] WinDivert.Ipv6Hdr header, [MarshalAs(UnmanagedType.LPStr)] string fieldName);
 
+        [DllImport(TEST_UTILS_DLL)]
+        static extern long GetTcpHdrValueFrom([In] WinDivert.TcpHdr header, [MarshalAs(UnmanagedType.LPStr)] string fieldName);
+
         /* ----------------------------------------------------------------------------------------------------------------- */
         [Test]
         public void Struct_Size_Matches()
@@ -40,6 +42,10 @@ namespace Tests
                 nameof(WinDivert.Reflect),
                 nameof(WinDivert.IpHdr),
                 nameof(WinDivert.Ipv6Hdr),
+                nameof(WinDivert.IcmpHdr),
+                nameof(WinDivert.Icmpv6Hdr),
+                nameof(WinDivert.TcpHdr),
+                nameof(WinDivert.UdpHdr),
             };
 
             int[]    sizes         = new int[structsToTest.Length];
@@ -135,7 +141,8 @@ namespace Tests
             GetOffsets<WinDivert.Flow>(fields, out int[] expectedOffsets, out int[] offsets);
 
             // Assert
-            CollectionAssert.AreEqual(expectedOffsets, offsets);
+            for (int i = 0; i < fields.Length; i++)
+                Assert.AreEqual(expectedOffsets[i], offsets[i], fields[i]);
         }
 
         /* ----------------------------------------------------------------------------------------------------------------- */
@@ -153,7 +160,8 @@ namespace Tests
             GetOffsets<WinDivert.Network>(fields, out int[] expectedOffsets, out int[] offsets);
 
             // Assert
-            CollectionAssert.AreEqual(expectedOffsets, offsets);
+            for (int i = 0; i < fields.Length; i++)
+                Assert.AreEqual(expectedOffsets[i], offsets[i], fields[i]);
         }
 
         /* ----------------------------------------------------------------------------------------------------------------- */
@@ -174,7 +182,8 @@ namespace Tests
             GetOffsets<WinDivert.Reflect>(fields, out int[] expectedOffsets, out int[] offsets);
 
             // Assert
-            CollectionAssert.AreEqual(expectedOffsets, offsets);
+            for (int i = 0; i < fields.Length; i++)
+                Assert.AreEqual(expectedOffsets[i], offsets[i], fields[i]);
         }
 
         /* ----------------------------------------------------------------------------------------------------------------- */
@@ -198,7 +207,8 @@ namespace Tests
             GetOffsets<WinDivert.Socket>(fields, out int[] expectedOffsets, out int[] offsets);
 
             // Assert
-            CollectionAssert.AreEqual(expectedOffsets, offsets);
+            for (int i = 0; i < fields.Length; i++)
+                Assert.AreEqual(expectedOffsets[i], offsets[i], fields[i]);
         }
 
         /* ----------------------------------------------------------------------------------------------------------------- */
@@ -223,7 +233,8 @@ namespace Tests
             GetOffsets<WinDivert.IpHdr>(fields, out int[] expectedOffsets, out int[] offsets);
 
             // Assert
-            CollectionAssert.AreEqual(expectedOffsets, offsets);
+            for (int i = 0; i < fields.Length; i++)
+                Assert.AreEqual(expectedOffsets[i], offsets[i], fields[i]);
         }
 
         /* ----------------------------------------------------------------------------------------------------------------- */
@@ -243,6 +254,93 @@ namespace Tests
 
             // Act
             GetOffsets<WinDivert.Ipv6Hdr>(fields, out int[] expectedOffsets, out int[] offsets);
+
+            // Assert
+            for (int i = 0; i < fields.Length; i++)
+                Assert.AreEqual(expectedOffsets[i], offsets[i], fields[i]);
+        }
+
+        /* ----------------------------------------------------------------------------------------------------------------- */
+        [Test]
+        public void IcmpHdr_Offsets_Match()
+        {
+            // Arrange
+            string[] fields =
+            {
+                nameof(WinDivert.IcmpHdr.Type),
+                nameof(WinDivert.IcmpHdr.Code),
+                nameof(WinDivert.IcmpHdr.Checksum),
+                nameof(WinDivert.IcmpHdr.Body),
+            };
+
+            // Act
+            GetOffsets<WinDivert.IcmpHdr>(fields, out int[] expectedOffsets, out int[] offsets);
+
+            // Assert
+            for (int i = 0; i < fields.Length; i++)
+                Assert.AreEqual(expectedOffsets[i], offsets[i], fields[i]);
+        }
+
+        /* ----------------------------------------------------------------------------------------------------------------- */
+        [Test]
+        public void Icmpv6Hdr_Offsets_Match()
+        {
+            // Arrange
+            string[] fields =
+            {
+                nameof(WinDivert.Icmpv6Hdr.Type),
+                nameof(WinDivert.Icmpv6Hdr.Code),
+                nameof(WinDivert.Icmpv6Hdr.Checksum),
+                nameof(WinDivert.Icmpv6Hdr.Body),
+            };
+
+            // Act
+            GetOffsets<WinDivert.Icmpv6Hdr>(fields, out int[] expectedOffsets, out int[] offsets);
+
+            // Assert
+            for (int i = 0; i < fields.Length; i++)
+                Assert.AreEqual(expectedOffsets[i], offsets[i], fields[i]);
+        }
+
+        /* ----------------------------------------------------------------------------------------------------------------- */
+        [Test]
+        public void TcpHdr_Offsets_Match()
+        {
+            // Arrange
+            string[] fields =
+            {
+                nameof(WinDivert.TcpHdr.SrcPort),
+                nameof(WinDivert.TcpHdr.DstPort),
+                nameof(WinDivert.TcpHdr.SeqNum),
+                nameof(WinDivert.TcpHdr.AckNum),
+                nameof(WinDivert.TcpHdr.Window),
+                nameof(WinDivert.TcpHdr.Checksum),
+                nameof(WinDivert.TcpHdr.UrgPtr),
+            };
+
+            // Act
+            GetOffsets<WinDivert.TcpHdr>(fields, out int[] expectedOffsets, out int[] offsets);
+
+            // Assert
+            for (int i = 0; i < fields.Length; i++)
+                Assert.AreEqual(expectedOffsets[i], offsets[i], fields[i]);
+        }
+
+        /* ----------------------------------------------------------------------------------------------------------------- */
+        [Test]
+        public void UdpHdr_Offsets_Match()
+        {
+            // Arrange
+            string[] fields =
+            {
+                nameof(WinDivert.UdpHdr.SrcPort),
+                nameof(WinDivert.UdpHdr.DstPort),
+                nameof(WinDivert.UdpHdr.Length),
+                nameof(WinDivert.UdpHdr.Checksum),
+            };
+
+            // Act
+            GetOffsets<WinDivert.UdpHdr>(fields, out int[] expectedOffsets, out int[] offsets);
 
             // Assert
             for (int i = 0; i < fields.Length; i++)
@@ -330,6 +428,27 @@ namespace Tests
         }
 
         /* ----------------------------------------------------------------------------------------------------------------- */
+        [Test]
+        public void TcpHdr_Values_Match()
+        {
+            // Arrange
+            string[] fields =
+            {
+                nameof(WinDivert.TcpHdr.SrcPort),
+                nameof(WinDivert.TcpHdr.DstPort),
+                nameof(WinDivert.TcpHdr.SeqNum),
+                nameof(WinDivert.TcpHdr.AckNum),
+                nameof(WinDivert.TcpHdr.Window),
+                nameof(WinDivert.TcpHdr.Checksum),
+                nameof(WinDivert.TcpHdr.UrgPtr),
+            };
+
+            // Act & Assert
+            AssertSingleFieldValueHigh<WinDivert.TcpHdr>(fields, GetTcpHdrValueFrom);
+            AssertSingleFieldValueLow<WinDivert.TcpHdr>(fields, GetTcpHdrValueFrom);
+        }
+
+        /* ----------------------------------------------------------------------------------------------------------------- */
         static void AssertSingleFieldValueHigh<T>(string[] fields, Func<T, string, long> fieldValueGetter) where T : struct
         {
             foreach (string fieldName in fields)
@@ -408,6 +527,7 @@ namespace Tests
                 return false;
             };
 
+            // HACK: Could use GetMember
             if (doSafe(() => typeof(T).GetProperty(memberName).SetValue(target, (byte) value))) return;
             if (doSafe(() => typeof(T).GetProperty(memberName).SetValue(target, value > 0))) return;
             if (doSafe(() => typeof(T).GetField(memberName).SetValue(target, (byte)value))) return;

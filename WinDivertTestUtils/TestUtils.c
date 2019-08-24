@@ -20,6 +20,10 @@ EXPORT int SizeOf(char* name)
 	if (!strcmp(name, "Reflect")) return sizeof(WINDIVERT_DATA_REFLECT);
 	if (!strcmp(name, "IpHdr")) return sizeof(WINDIVERT_IPHDR);
 	if (!strcmp(name, "Ipv6Hdr")) return sizeof(WINDIVERT_IPV6HDR);
+	if (!strcmp(name, "IcmpHdr")) return sizeof(WINDIVERT_ICMPHDR);
+	if (!strcmp(name, "Icmpv6Hdr")) return sizeof(WINDIVERT_ICMPV6HDR);
+	if (!strcmp(name, "TcpHdr")) return sizeof(WINDIVERT_TCPHDR);
+	if (!strcmp(name, "UdpHdr")) return sizeof(WINDIVERT_UDPHDR);
 
 	return -1;
 }
@@ -88,6 +92,37 @@ EXPORT int OffsetOf(char* object, char* field)
 		TryGetOffset(IPV6HDR, field, SrcAddr);
 		TryGetOffset(IPV6HDR, field, DstAddr);
 	}
+	if (!strcmp(object, "IcmpHdr"))
+	{
+		TryGetOffset(ICMPHDR, field, Type);
+		TryGetOffset(ICMPHDR, field, Code);
+		TryGetOffset(ICMPHDR, field, Checksum);
+		TryGetOffset(ICMPHDR, field, Body);
+	}
+	if (!strcmp(object, "Icmpv6Hdr"))
+	{
+		TryGetOffset(ICMPHDR, field, Type);
+		TryGetOffset(ICMPHDR, field, Code);
+		TryGetOffset(ICMPHDR, field, Checksum);
+		TryGetOffset(ICMPHDR, field, Body);
+	}
+	if (!strcmp(object, "TcpHdr"))
+	{
+		TryGetOffset(TCPHDR, field, SrcPort);
+		TryGetOffset(TCPHDR, field, DstPort);
+		TryGetOffset(TCPHDR, field, SeqNum);
+		TryGetOffset(TCPHDR, field, AckNum);
+		TryGetOffset(TCPHDR, field, Window);
+		TryGetOffset(TCPHDR, field, Checksum);
+		TryGetOffset(TCPHDR, field, UrgPtr);
+	}
+	if (!strcmp(object, "UdpHdr"))
+	{
+		TryGetOffset(UDPHDR, field, SrcPort);
+		TryGetOffset(UDPHDR, field, DstPort);
+		TryGetOffset(UDPHDR, field, Length);
+		TryGetOffset(UDPHDR, field, Checksum);
+	}
 
 	return -1;
 }
@@ -105,6 +140,8 @@ EXPORT long GetAddressValueFrom(PWINDIVERT_ADDRESS address, char* field)
 	TryGetValue(address, field, IPChecksum);
 	TryGetValue(address, field, TCPChecksum);
 	TryGetValue(address, field, UDPChecksum);
+
+	return -1;
 }
 
 EXPORT long GetIpHdrValueFrom(PWINDIVERT_IPHDR header, char* field)
@@ -125,6 +162,8 @@ EXPORT long GetIpHdrValueFrom(PWINDIVERT_IPHDR header, char* field)
 	if (!strcmp(field, "MF")) return WINDIVERT_IPHDR_GET_MF(header);
 	if (!strcmp(field, "DF")) return WINDIVERT_IPHDR_GET_DF(header);
 	if (!strcmp(field, "Reserved")) return WINDIVERT_IPHDR_GET_RESERVED(header);
+
+	return -1;
 }
 
 EXPORT long GetIpv6HdrValueFrom(PWINDIVERT_IPV6HDR header, char* field)
@@ -142,4 +181,28 @@ EXPORT long GetIpv6HdrValueFrom(PWINDIVERT_IPV6HDR header, char* field)
 
 	if (!strcmp(field, "TrafficClass")) return WINDIVERT_IPV6HDR_GET_TRAFFICCLASS(header);
 	if (!strcmp(field, "FlowLabel")) return WINDIVERT_IPV6HDR_GET_FLOWLABEL(header);
+
+	return -1;
+}
+
+EXPORT long GetTcpHdrValueFrom(PWINDIVERT_TCPHDR header, char* field)
+{
+	TryGetValue(header, field, SrcPort);
+	TryGetValue(header, field, DstPort);
+	TryGetValue(header, field, SeqNum);
+	TryGetValue(header, field, AckNum);
+	TryGetValue(header, field, Reserved1);
+	TryGetValue(header, field, HdrLength);
+	TryGetValue(header, field, Fin);
+	TryGetValue(header, field, Syn);
+	TryGetValue(header, field, Rst);
+	TryGetValue(header, field, Psh);
+	TryGetValue(header, field, Ack);
+	TryGetValue(header, field, Urg);
+	TryGetValue(header, field, Reserved2);
+	TryGetValue(header, field, Window);
+	TryGetValue(header, field, Checksum);
+	TryGetValue(header, field, UrgPtr);
+
+	return -1;
 }

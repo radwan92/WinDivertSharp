@@ -170,6 +170,16 @@ namespace WinDivertSharp
                         m_Flags ^= 1 << 7;
                 }
             }
+
+            /// <summary>
+            ///     Flags encoded: Sniffed:1, Outbound:1, Loopback:1, Impostor:1, IPv6:1, IPChecksum:1, TCPChecksum:1,
+            ///     UDPChecksum:1
+            /// </summary>
+            public byte Flags
+            {
+                get => m_Flags;
+                set => m_Flags = value;
+            }
         }
     }
 }
